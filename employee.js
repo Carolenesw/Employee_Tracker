@@ -3,10 +3,11 @@ const express = require("express");
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 
+// require consoleTable to print MYSQL rows to the console
+const consoleTable = require("console.table");
 const app = express();
 
 // Set the port of our application
-
 const PORT = process.env.PORT || 8080;
 
 // Parse request body as JSON
@@ -26,15 +27,15 @@ const connection = mysql.createConnection({
 connection.connect(function(err) {
   if (err) {
     console.error("error connecting: " + err.stack);
-   
-    // get employee's data after connection is made
-    getData()
+ 
   }
 
-  console.log("connected as id " + connection.threadId);
+  console.log("DB connection established id: " + connection.threadId);
+  // get employee's data after connection is made
+  getData()
 });
 
-// create function to prompt employee query/selection
+// create function to prompt for employee query/selection
 function getData() {
     inquirer
       .prompt({
@@ -55,10 +56,10 @@ function getData() {
                   "Delete/Remove Employee",
                   "View the total utilized Budget of a Department"
                 ]
-      })
-}
+      });
+};
 
 // start server 
-app.listen(PORT, function() {
+app.listen(PORT, () => {
     console.log("Server listening on: http://localhost:" + PORT);
   });
