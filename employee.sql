@@ -32,3 +32,9 @@ PRIMARY KEY (emp_id)
 SELECT * FROM employee;
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)  VALUES ("John","Morris", 01, 1), ("David","Brown", 05, 2),  ("Christopher","Thompson", 03, 1),("Masha","Matthews", 08, 1),  ("Daniel","Kelly", 02, 2), ("Angela", "Dawkins", 07, 2);
+
+-- populate department table
+SELECT * FROM department;
+
+INSERT INTO department (name) VALUES ("Production"),("Finance"), ("Marketing"), ("Infomation Technology"), ("Human Resources");
+
