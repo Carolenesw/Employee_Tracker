@@ -68,6 +68,7 @@ function getData() {
 //   });
 // });
 
+// ------------- functions viewDepartment, viewEmployees and viewAllRole --------------
 function viewEmployees() {
   connection.query("SELECT * FROM employees", function(err, results) {
       if (err) 
@@ -91,7 +92,20 @@ function viewDepartment() {
 
   });
 }
-viewDepartment()
+// viewDepartment()
+
+// view all roles
+function viewAllRole() {
+  connection.query("SELECT * FROM role", function(err, results) {
+      if (err) 
+      throw err;
+      console.table(results);
+      connection.end();
+      return results;
+
+  });
+}
+viewAllRole()
 
 // start server
 app.listen(PORT, () => {
