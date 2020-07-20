@@ -32,8 +32,9 @@ connection.connect(function(err) {
 
   console.log("DB connection established id: " + connection.threadId);
   // get employee's data after connection is made
-  getData()
+  // getData()
 });
+
 
 // create function to prompt for employee query/selection
 function getData() {
@@ -58,6 +59,18 @@ function getData() {
                 ]
       });
 };
+
+// get all employee data 
+app.get("/employees", (res, req) => {
+  connection.query("SELECT * FROM employees", (err, rows, fields) => {
+    if(!err) 
+
+      console.log(rows)
+ else 
+      console.log(err)
+
+  })
+});
 
 // start server 
 app.listen(PORT, () => {
