@@ -20,59 +20,67 @@ const connection = mysql.createConnection({
   port: 3306,
   user: "root",
   password: "mysql",
-  database: "employee_db"
+  database: "employee_db",
 });
 
-// create function to handle connection 
-connection.connect(function(err) {
+// create function to handle connection
+connection.connect(function (err) {
   if (err) {
     console.error("error connecting: " + err.stack);
- 
   }
 
   console.log("DB connection established id: " + connection.threadId);
   // get employee's data after connection is made
-  // getData()
+  // getData();
 });
-
 
 // create function to prompt for employee query/selection
 function getData() {
-    inquirer
-      .prompt({
-        name: "query",
-        type: "list",
-        message: "Please select action to be taken?",
-        choices: ["View All Employees", 
-                  "View All Departments", 
-                  "View Employee Roles", 
-                  "View Employees By Department",
-                  "View Employees By Manager", 
-                  "View Employees By Role", 
-                  "Add New Employee", 
-                  "Add New Department",
-                  "Add New Role",
-                  "Update/Edit Employee Manager", 
-                  "Update/Edit Employee Role", 
-                  "Delete/Remove Employee",
-                  "View the total utilized Budget of a Department"
-                ]
-      });
-};
-
-// get all employee data 
-app.get("/employees", (res, req) => {
-  connection.query("SELECT * FROM employees", (err, rows, fields) => {
-    if(!err) 
-
-      console.log(rows)
- else 
-      console.log(err)
-
-  })
-});
-
-// start server 
-app.listen(PORT, () => {
-    console.log("Server listening on: http://localhost:" + PORT);
+  inquirer.prompt({
+    name: "query",
+    type: "list",
+    message: "Please select action to be taken?",
+    choices: [
+      "View All Employees",
+      "View All Departments",
+      "View Employee Roles",
+      "View Employees By Department",
+      "View Employees By Manager",
+      "View Employees By Role",
+      "Add New Employee",
+      "Add New Department",
+      "Add New Role",
+      "Update/Edit Employee Manager",
+      "Update/Edit Employee Role",
+      "Delete/Remove Employee",
+      "View the total utilized Budget of a Department",
+    ],
   });
+}
+
+// get all employees data
+// app.get("/employees", (req, res) => {
+//   connection.query("SELECT * FROM employees", (err, rows, fields) => {
+//     if (!err) {
+//       console.log(rows);
+//       res.send(rows);
+//     } else console.log(err);
+//   });
+// });
+
+function viewEmployees() {
+  connection.query("SELECT * FROM employees", function(err, results) {
+      if (err) 
+      throw err;
+      console.table(results);
+      connection.end();
+      return results;
+
+  });
+}
+viewEmployees()
+
+// start server
+app.listen(PORT, () => {
+  console.log("Server listening on: http://localhost:" + PORT);
+});
