@@ -78,7 +78,20 @@ function viewEmployees() {
 
   });
 }
-viewEmployees()
+// viewEmployees()
+
+// view all departments 
+function viewDepartment() {
+  connection.query("SELECT * FROM department", function(err, results) {
+      if (err) 
+      throw err;
+      console.table(results);
+      connection.end();
+      return results;
+
+  });
+}
+viewDepartment()
 
 // start server
 app.listen(PORT, () => {
