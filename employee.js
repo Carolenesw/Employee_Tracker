@@ -58,21 +58,10 @@ function getData() {
   });
 }
 
-// get all employees data
-// app.get("/employees", (req, res) => {
-//   connection.query("SELECT * FROM employees", (err, rows, fields) => {
-//     if (!err) {
-//       console.log(rows);
-//       res.send(rows);
-//     } else console.log(err);
-//   });
-// });
-
 // ------------- functions viewDepartment, viewEmployees and viewAllRole --------------
 function viewEmployees() {
   connection.query("SELECT * FROM employees", function(err, results) {
-      if (err) 
-      throw err;
+      if (err) throw err;
       console.table(results);
       connection.end();
       return results;
@@ -84,8 +73,7 @@ function viewEmployees() {
 // view all departments 
 function viewDepartment() {
   connection.query("SELECT * FROM department", function(err, results) {
-      if (err) 
-      throw err;
+      if (err) throw err;
       console.table(results);
       connection.end();
       return results;
@@ -97,15 +85,45 @@ function viewDepartment() {
 // view all roles
 function viewAllRole() {
   connection.query("SELECT * FROM role", function(err, results) {
-      if (err) 
-      throw err;
+      if (err) throw err;
       console.table(results);
       connection.end();
       return results;
 
   });
 }
-viewAllRole()
+// viewAllRole()
+
+
+//---------- functions to select employee based on department role or manager---------
+// view all emplyees by department
+function viewEmployeesByDep() {
+  connection.query("SELECT * FROM department", function(err, results) {
+    if (err) throw err;
+inquirer
+    .prompt({
+      name: "role",
+      type: "list",
+      message: "Select Role",
+      choices: function () {
+        let allDepartmentName = [];
+        for(var i = 0; i < results.length; i++) {
+         allDepartmentName.push(results[i].name)
+          console.log(results.name)
+        }
+        return allDepartmentName
+      }
+      
+    })
+    .then(function(selection){
+
+    })
+    connection.end();
+    return results;
+   
+})
+}
+viewEmployeesByDep()
 
 // start server
 app.listen(PORT, () => {
