@@ -5,7 +5,7 @@ const inquirer = require("inquirer");
 
 // require consoleTable to print MYSQL rows to the console
 const consoleTable = require("console.table");
-const { async } = require("rxjs/internal/scheduler/async");
+// const { async } = require("rxjs/internal/scheduler/async");
 const app = express();
 
 // Set the port of our application
@@ -32,8 +32,19 @@ connection.connect(function (err) {
 
   console.log("DB connection established id: " + connection.threadId);
   // get employee's data after connection is made
+  
+// start server
+app.listen(PORT, () => {
+  console.log("Server listening on: http://localhost:" + PORT);
+  // addDepartment()
+});
+
   // getData();
 });
+
+
+
+
 
 // create function to prompt for employee query/selection
 function getData() {
@@ -42,14 +53,14 @@ function getData() {
     type: "list",
     message: "Please select action to be taken?",
     choices: [
-      "View All Employees",
-      "View All Departments",
-      "View Employee Roles",
-      "View Employees By Department",
-      "View Employees By Manager",
-      "View Employees By Role",
+      // "View All Employees",
+      // "View All Departments",
+      // "View Employee Roles",
+      // "View Employees By Department",
+      // "View Employees By Manager",
+      // "View Employees By Role",
       "Add New Employee",
-      "Add New Department",
+      // "Add New Department",
       "Add New Role",
       "Update/Edit Employee Manager",
       "Update/Edit Employee Role",
@@ -95,15 +106,21 @@ function viewAllRole() {
 
 // view all managers
 function viewManager() {
-  connection.query(
-    "SELECT id, first_name, last_name, role_id, manager_id FROM employees WHERE id IN (SELECT department_id FROM role WHERE department_id IS NOT NULL)",
-    function (err, results) {
-      if (err) throw err;
-      console.table(results);
-      connection.end();
-      return results;
-    }
-  );
+  connection.query("SELECT * FROM employees", function (err, results) {
+    if (err) throw err;
+    console.table(results);
+    connection.end();
+    return results;
+  });
+  // connection.query(
+  //   "SELECT employees.first_name, employees.last_name, role.title FROM employees INNER JOIN role ON employees.role_id = role.id AND ?",
+  //   function (err, results) {
+  //     if (err) throw err;
+  //     console.table(results);
+  //     connection.end();
+  //     return results;
+  //   }
+  // );
 }
 
 // need to double check selection is in-accurate
@@ -172,10 +189,7 @@ function employeeByRole() {
         const query =
           "SELECT employees.first_name, employees.last_name, role.title FROM employees INNER JOIN role ON employees.role_id = role.id AND ?";
 
-        connection.query(query, { title: answer.role }, function (
-          err,
-          results
-        ) {
+        connection.query(query, { title: answer.role }, function (err, results) {
           if (err) throw err;
           console.table(results);
           connection.end();
@@ -185,9 +199,32 @@ function employeeByRole() {
   });
 }
 
-employeeByRole();
+// employeeByRole();
+
+// add a new department 
+function addDepartment() {
+  inquirer
+      .prompt([{
+          name: "name",
+          type: "input",
+          message: "Enter new Department: "
+      }
+    ])
+    .then(function (answer){
+      connection.query(`INSERT INTO department (name) VALUES ("${answer.name}")`, function(err, result){
+        if (err) throw err;
+        // use 'affectRows' default is the number of rows actually changed
+        console.log(result.affectedRows + " record(s) updated");
+      })
+      connection.end();
+    });
+}
+
 
 //---------- functions to add department, employee and role -----------------------
+
+
+
 
 function addNewRole() {
   // const department = await viewDepartment();
@@ -224,7 +261,4 @@ function addNewRole() {
 
 // addNewRole()
 // addNewEmployee()
-// start server
-app.listen(PORT, () => {
-  console.log("Server listening on: http://localhost:" + PORT);
-});
+
