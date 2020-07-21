@@ -5,6 +5,7 @@ const inquirer = require("inquirer");
 
 // require consoleTable to print MYSQL rows to the console
 const consoleTable = require("console.table");
+const { async } = require("rxjs/internal/scheduler/async");
 const app = express();
 
 // Set the port of our application
@@ -58,73 +59,133 @@ function getData() {
   });
 }
 
-// ------------- functions viewDepartment, viewEmployees and viewAllRole --------------
+// ------------- functions viewDepartment, viewEmployees viewManager and viewAllRole --------------
 function viewEmployees() {
-  connection.query("SELECT * FROM employees", function(err, results) {
-      if (err) throw err;
-      console.table(results);
-      connection.end();
-      return results;
-
+  connection.query("SELECT * FROM employees", function (err, results) {
+    if (err) throw err;
+    console.table(results);
+    connection.end();
+    return results;
   });
 }
 // viewEmployees()
 
-// view all departments 
+// view all departments
 function viewDepartment() {
-  connection.query("SELECT * FROM department", function(err, results) {
-      if (err) throw err;
-      console.table(results);
-      connection.end();
-      return results;
-
+  connection.query("SELECT * FROM department", function (err, results) {
+    if (err) throw err;
+    console.table(results);
+    connection.end();
+    return results;
   });
 }
 // viewDepartment()
 
 // view all roles
 function viewAllRole() {
-  connection.query("SELECT * FROM role", function(err, results) {
+  connection.query("SELECT * FROM role", function (err, results) {
+    if (err) throw err;
+    console.table(results);
+    connection.end();
+    return results;
+  });
+}
+
+// viewAllRole()
+
+// view all managers
+function viewManager() {
+  connection.query(
+    "SELECT id, first_name, last_name, role_id, manager_id FROM employees WHERE id IN (SELECT department_id FROM role WHERE department_id IS NOT NULL)",
+    function (err, results) {
       if (err) throw err;
       console.table(results);
       connection.end();
       return results;
-
-  });
+    }
+  );
 }
-// viewAllRole()
 
+// need to double check selection is in-accurate
+// viewManager()
+// viewAllRole()
 
 //---------- functions to select employee based on department role or manager---------
 // view all emplyees by department
 function viewEmployeesByDep() {
-  connection.query("SELECT * FROM department", function(err, results) {
+  connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
-inquirer
-    .prompt({
-      name: "role",
-      type: "list",
-      message: "Select Role",
-      choices: function () {
-        let allDepartmentName = [];
-        for(var i = 0; i < results.length; i++) {
-         allDepartmentName.push(results[i].name)
-          console.log(results.name)
-        }
-        return allDepartmentName
-      }
-      
-    })
-    .then(function(selection){
+    inquirer
+      .prompt({
+        name: "role",
+        type: "list",
+        message: "Select Role",
+        choices: function () {
+          // push all department in array for selection
+          let allDepartmentName = [];
+          for (let i = 0; i < results.length; i++) {
+            allDepartmentName.push(results[i].name);
+            console.log(results.name);
+          }
+          return allDepartmentName;
+        },
+      })
+      .then(function (answer) {
+        console.log(answer);
+        // use left join to  connect table for relation
+        var query =
+          "SELECT employees.first_name, employees.last_name, role.department_id, department.name FROM employees LEFT JOIN role ON employees.role_id = role.id LEFT JOIN department ON department.id = role.department_id WHERE department.name = ?";
 
-    })
-    connection.end();
-    return results;
-   
-})
+        console.log("query selection:", query, answer.role);
+
+        connection.query(query, answer.role, function (err, results) {
+          if (err) throw err;
+          console.table(results);
+          connection.end();
+          return results;
+        });
+      });
+  });
 }
-viewEmployeesByDep()
+viewEmployeesByDep();
 
+//---------- functions to add department, employee and role -----------------------
+
+function addNewRole() {
+  // const department = await viewDepartment();
+  inquirer.prompt([
+    {
+      name: "title",
+      type: "input",
+      message: "Enter role title: ",
+    },
+    {
+      name: "salary",
+      type: "input",
+      message: "Enter salary: ",
+    },
+    // {
+    //   name: "department",
+    //   type: "list",
+    //   message: "Select a department",
+    //   choices: department
+    // }
+  ]);
+  // .then(function (answer){
+  //   connection.query("SELECT id FROM department WHERE ?", {name:answer.department}, function(err, department){
+  //     if (err) throw err;
+  //     connection.query(`INSERT INTO role (title, salary, department_id) VALUES ("${answer.title}", "${answer.salary}", "${department[0].id}")`, function(err, result){
+  //       if (err) throw err;
+  //       console.log(result.affectedRows + " record(s) updated");
+  //       connection.end();
+  //     })
+  //   });
+
+  // });
+}
+
+// addNewRole()
+// addNewEmployee()
 // start server
 app.listen(PORT, () => {
   console.log("Server listening on: http://localhost:" + PORT);
