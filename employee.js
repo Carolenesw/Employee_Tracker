@@ -119,7 +119,7 @@ function viewEmployeesByDep() {
       .prompt({
         name: "department",
         type: "list",
-        message: "Select Role",
+        message: "Select Department?",
         choices: function () {
           // push all department in array for selection
           let allDepartmentName = [];
@@ -132,8 +132,8 @@ function viewEmployeesByDep() {
       })
       .then(function (answer) {
         console.log(answer);
-        // use left join to  connect table for relation
-        var query =
+        // use left join to  connect rows for relation
+        const query =
           "SELECT employees.first_name, employees.last_name, role.department_id, department.name FROM employees LEFT JOIN role ON employees.role_id = role.id LEFT JOIN department ON department.id = role.department_id WHERE department.name = ?";
 
         console.log("query selection:", query, answer.department);
@@ -147,7 +147,45 @@ function viewEmployeesByDep() {
       });
   });
 }
-viewEmployeesByDep();
+// viewEmployeesByDep();
+
+// view all emplyees by Role
+function employeeByRole() {
+  connection.query("SELECT title FROM role", function (err, results) {
+    if (err) throw err;
+    inquirer
+      .prompt({
+        name: "role",
+        type: "list",
+        message: "Select Role",
+        choices: function () {
+          // push all department in array for selection
+          let roles = [];
+          for (var i = 0; i < results.length; i++) {
+            roles.push(results[i].title);
+          }
+          return roles;
+        },
+      })
+      .then(function (answer) {
+        // use INNER join to connect rows for relation
+        const query =
+          "SELECT employees.first_name, employees.last_name, role.title FROM employees INNER JOIN role ON employees.role_id = role.id AND ?";
+
+        connection.query(query, { title: answer.role }, function (
+          err,
+          results
+        ) {
+          if (err) throw err;
+          console.table(results);
+          connection.end();
+          return results;
+        });
+      });
+  });
+}
+
+employeeByRole();
 
 //---------- functions to add department, employee and role -----------------------
 
