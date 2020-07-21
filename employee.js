@@ -117,7 +117,7 @@ function viewEmployeesByDep() {
     if (err) throw err;
     inquirer
       .prompt({
-        name: "role",
+        name: "department",
         type: "list",
         message: "Select Role",
         choices: function () {
@@ -136,9 +136,9 @@ function viewEmployeesByDep() {
         var query =
           "SELECT employees.first_name, employees.last_name, role.department_id, department.name FROM employees LEFT JOIN role ON employees.role_id = role.id LEFT JOIN department ON department.id = role.department_id WHERE department.name = ?";
 
-        console.log("query selection:", query, answer.role);
+        console.log("query selection:", query, answer.department);
 
-        connection.query(query, answer.role, function (err, results) {
+        connection.query(query, answer.department, function (err, results) {
           if (err) throw err;
           console.table(results);
           connection.end();
