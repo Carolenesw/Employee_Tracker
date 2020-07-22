@@ -32,19 +32,15 @@ connection.connect(function (err) {
 
   console.log("DB connection established id: " + connection.threadId);
   // get employee's data after connection is made
-  
-// start server
-app.listen(PORT, () => {
-  console.log("Server listening on: http://localhost:" + PORT);
-  // addDepartment()
-});
+
+  // start server
+  app.listen(PORT, () => {
+    console.log("Server listening on: http://localhost:" + PORT);
+    // addDepartment()
+  });
 
   // getData();
 });
-
-
-
-
 
 // create function to prompt for employee query/selection
 function getData() {
@@ -104,28 +100,21 @@ function viewAllRole() {
 
 // viewAllRole()
 
-// view all managers
+// view employees by manager managers
 function viewManager() {
-  connection.query("SELECT * FROM employees", function (err, results) {
-    if (err) throw err;
-    console.table(results);
-    connection.end();
-    return results;
-  });
-  // connection.query(
-  //   "SELECT employees.first_name, employees.last_name, role.title FROM employees INNER JOIN role ON employees.role_id = role.id AND ?",
-  //   function (err, results) {
-  //     if (err) throw err;
-  //     console.table(results);
-  //     connection.end();
-  //     return results;
-  //   }
-  // );
+  // use inner join to link tables for selection
+  connection.query("SELECT employees.first_name, employees.last_name, role.title FROM employees INNER JOIN role ON employees.role_id = role.id WHERE role.title = 'Manager'",
+    function (err, results) {
+      if (err) throw err;
+      console.table(results);
+      connection.end();
+      return results;
+    }
+  );
 }
 
-// need to double check selection is in-accurate
-// viewManager()
-// viewAllRole()
+viewManager();
+
 
 //---------- functions to select employee based on department role or manager---------
 // view all emplyees by department
@@ -189,7 +178,10 @@ function employeeByRole() {
         const query =
           "SELECT employees.first_name, employees.last_name, role.title FROM employees INNER JOIN role ON employees.role_id = role.id AND ?";
 
-        connection.query(query, { title: answer.role }, function (err, results) {
+        connection.query(query, { title: answer.role }, function (
+          err,
+          results
+        ) {
           if (err) throw err;
           console.table(results);
           connection.end();
@@ -198,33 +190,32 @@ function employeeByRole() {
       });
   });
 }
-
 // employeeByRole();
 
-// add a new department 
+// add a new department
 function addDepartment() {
   inquirer
-      .prompt([{
-          name: "name",
-          type: "input",
-          message: "Enter new Department: "
-      }
+    .prompt([
+      {
+        name: "name",
+        type: "input",
+        message: "Enter new Department: ",
+      },
     ])
-    .then(function (answer){
-      connection.query(`INSERT INTO department (name) VALUES ("${answer.name}")`, function(err, result){
-        if (err) throw err;
-        // use 'affectRows' default is the number of rows actually changed
-        console.log(result.affectedRows + " record(s) updated");
-      })
+    .then(function (answer) {
+      connection.query(
+        `INSERT INTO department (name) VALUES ("${answer.name}")`,
+        function (err, result) {
+          if (err) throw err;
+          // use 'affectRows' default is the number of rows actually changed
+          console.log(result.affectedRows + " record(s) updated");
+        }
+      );
       connection.end();
     });
 }
 
-
 //---------- functions to add department, employee and role -----------------------
-
-
-
 
 function addNewRole() {
   // const department = await viewDepartment();
@@ -261,4 +252,3 @@ function addNewRole() {
 
 // addNewRole()
 // addNewEmployee()
-
