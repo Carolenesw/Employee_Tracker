@@ -5,7 +5,6 @@ const inquirer = require("inquirer");
 
 // require consoleTable to print MYSQL rows to the console
 const consoleTable = require("console.table");
-// const { async } = require("rxjs/internal/scheduler/async");
 const app = express();
 
 // Set the port of our application
@@ -67,7 +66,7 @@ function getData() {
   });
 }
 
-// ------------- functions viewDepartment, viewEmployees viewManager and viewAllRole --------------
+// ------------- functions viewDepartment, viewEmployees viewManager and viewAllRole --
 function viewEmployees() {
   connection.query("SELECT * FROM employees", function (err, results) {
     if (err) throw err;
@@ -102,18 +101,10 @@ function viewAllRole() {
       }
       return resolve(employeeRoles);
     })
-    // console.table(employeeRoles);
-    // connection.end();
-    // return results;
   });
 }
  
 // viewAllRole()
-
-
-
-
-
 
 
 // view employees by manager managers with Promisified function
@@ -213,8 +204,6 @@ function employeeByRole() {
 }
 // employeeByRole();
 
-
-
 //---------- functions to add department, employee and role -----------------------
 
 // add a new department
@@ -239,8 +228,8 @@ function addDepartment() {
       connection.end();
     });
 }
-// addDepartment()
 
+// addDepartment()
 async function addNewRole() {
   let departmentID = await viewDepartment()
   inquirer
