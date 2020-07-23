@@ -134,7 +134,7 @@ function viewManager() {
 
   });
 }
-viewManager();
+// viewManager();
 
 
 //---------- functions to select employee based on department role or manager---------
@@ -276,13 +276,13 @@ async function addNewRole() {
 }
 
 // addNewRole()
-// addNewEmployee()
 
+
+// add new employee
 async function addNewEmployee(){
   let emplRoles = await employeeByRole();
   let viewManagers = await viewManager();
   
-  // end select
   inquirer
       .prompt([{
           name: "firstName",
@@ -308,7 +308,9 @@ async function addNewEmployee(){
       }
   ])
 }
+addNewEmployee()
+// employeeByRole()
+// viewManager()
 
-
-
+// update employee
 
