@@ -1,4 +1,6 @@
-const express = require("express");
+const express = require("express"); 
+const util = require("util")
+
 // var exphbs = require("express-handlebars");
 const mysql = require("mysql");
 const inquirer = require("inquirer");
@@ -41,6 +43,7 @@ connection.connect(function (err) {
 
   // getData();
 });
+connection.query = util.promisify(connection.query)
 
 // create function to prompt for employee query/selection
 function getData() {
@@ -89,7 +92,7 @@ function viewDepartment() {
 // viewDepartment()
 
 // view all roles Promisified function
-function viewAllRole() {
+async function viewAllRole() {
   return new Promise((resolve, reject) => {
   connection.query("SELECT title FROM role", function (err, results) {
     if (err) return reject(err);        
@@ -108,12 +111,15 @@ function viewAllRole() {
 
 
 // view employees by manager managers with Promisified function
-function viewManager() {
-  return new Promise((resolve, reject) => {
+async function viewManager() {
+  console.log("VIEW MANAGEr XXXXXXXXXXXX")
+ return new Promise((resolve, reject) => {
   // use inner join to link tables for selection
   connection.query("SELECT employees.first_name, employees.last_name FROM employees INNER JOIN role ON employees.role_id = role.id WHERE role.title = 'Manager'",
     function (err, results) {
       if (err) return reject(err); 
+     console.log("manager view YYYYYYYY:", results)
+     
       let managerNames = [];
 
       for (var i = 0; i < results.length; i++){
@@ -121,9 +127,10 @@ function viewManager() {
         console.log("Managers:", managerNames)
     }
     return resolve(managerNames);
+    // return managerNames
   })
 
-  });
+ });
 }
 // viewManager();
 
@@ -183,8 +190,8 @@ function employeeByRole() {
             roles.push(results[i].title);
           }
           return roles;
-        },
-      })
+        }
+     })
       .then(function (answer) {
         // use INNER join to connect rows for relation
         const query =
@@ -267,12 +274,15 @@ async function addNewRole() {
 // addNewRole()
 
 
-// add new employee
+// add new employee by role 
 async function addNewEmployee(){
-  let emplRoles = await employeeByRole();
-  let viewManagers = await viewManager();
   
-  inquirer
+  let emplRoles = await viewAllRole(); //array for the choices
+  console.log("employee role:", emplRoles)
+  let viewManagers = await viewManager();
+  console.log("view maanger:", viewManagers)
+  
+  let answer = await inquirer
       .prompt([{
           name: "firstName",
           type: "input",
@@ -296,7 +306,20 @@ async function addNewEmployee(){
           choices: viewManagers
       }
   ])
+  .then(function (answers){
+    console.log("Add employee answers:", answers)
+    connection.query("SELECT id FROM department WHERE ?", {name:answers.department}, function(err, department){
+      if (err) throw err;
+      connection.query(`INSERT INTO role (title, salary, department_id) VALUES ("${answer.title}", "${answer.salary}", "${department[0].id}")`, function(err, result){
+        if (err) throw err;
+        console.log(result.affectedRows + " record(s) updated");
+        connection.end();
+      })
+    });
+
+  });
 }
+
 addNewEmployee()
 // employeeByRole()
 // viewManager()
