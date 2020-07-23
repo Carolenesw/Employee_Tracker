@@ -116,20 +116,25 @@ function viewAllRole() {
 
 
 
-
-// view employees by manager managers
+// view employees by manager managers with Promisified function
 function viewManager() {
+  return new Promise((resolve, reject) => {
   // use inner join to link tables for selection
-  connection.query("SELECT employees.first_name, employees.last_name, role.title FROM employees INNER JOIN role ON employees.role_id = role.id WHERE role.title = 'Manager'",
+  connection.query("SELECT employees.first_name, employees.last_name FROM employees INNER JOIN role ON employees.role_id = role.id WHERE role.title = 'Manager'",
     function (err, results) {
-      if (err) throw err;
-      console.table(results);
-      connection.end();
-      return results;
+      if (err) return reject(err); 
+      let managerNames = [];
+
+      for (var i = 0; i < results.length; i++){
+        managerNames.push(results[i].first_name + " " + results[i].last_name);
+        console.log("Managers:", managerNames)
     }
-  );
+    return resolve(managerNames);
+  })
+
+  });
 }
-// viewManager();
+viewManager();
 
 
 //---------- functions to select employee based on department role or manager---------
@@ -271,7 +276,7 @@ async function addNewRole() {
 }
 
 // addNewRole()
-addNewEmployee()
+// addNewEmployee()
 
 async function addNewEmployee(){
   let emplRoles = await employeeByRole();
