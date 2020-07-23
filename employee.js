@@ -37,6 +37,7 @@ connection.connect(function (err) {
   app.listen(PORT, () => {
     console.log("Server listening on: http://localhost:" + PORT);
     // addDepartment()
+    // addNewRole()
   });
 
   // getData();
@@ -88,17 +89,33 @@ function viewDepartment() {
 }
 // viewDepartment()
 
-// view all roles
+// view all roles Promisified function
 function viewAllRole() {
-  connection.query("SELECT * FROM role", function (err, results) {
-    if (err) throw err;
-    console.table(results);
-    connection.end();
-    return results;
+  return new Promise((resolve, reject) => {
+  connection.query("SELECT title FROM role", function (err, results) {
+    if (err) return reject(err);        
+      let employeeRoles = [];
+      for (var i = 0; i < results.length; i++){
+          employeeRoles.push(results[i].title);
+          console.log("employee Roles:", employeeRoles)
+          // return resolve(employeeRoles);
+      }
+      return resolve(employeeRoles);
+    })
+    // console.table(employeeRoles);
+    // connection.end();
+    // return results;
   });
 }
-
+ 
 // viewAllRole()
+
+
+
+
+
+
+
 
 // view employees by manager managers
 function viewManager() {
@@ -112,12 +129,11 @@ function viewManager() {
     }
   );
 }
-
-viewManager();
+// viewManager();
 
 
 //---------- functions to select employee based on department role or manager---------
-// view all emplyees by department
+// view all employees by department
 function viewEmployeesByDep() {
   connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
@@ -155,7 +171,7 @@ function viewEmployeesByDep() {
 }
 // viewEmployeesByDep();
 
-// view all emplyees by Role
+// view all employees by Role
 function employeeByRole() {
   connection.query("SELECT title FROM role", function (err, results) {
     if (err) throw err;
@@ -192,6 +208,10 @@ function employeeByRole() {
 }
 // employeeByRole();
 
+
+
+//---------- functions to add department, employee and role -----------------------
+
 // add a new department
 function addDepartment() {
   inquirer
@@ -214,41 +234,76 @@ function addDepartment() {
       connection.end();
     });
 }
+// addDepartment()
 
-//---------- functions to add department, employee and role -----------------------
-
-function addNewRole() {
-  // const department = await viewDepartment();
-  inquirer.prompt([
+async function addNewRole() {
+  let departmentID = await viewDepartment()
+  inquirer
+  .prompt([
     {
       name: "title",
       type: "input",
-      message: "Enter role title: ",
+      message: "Enter new ROLE/Title: ",
     },
     {
       name: "salary",
       type: "input",
       message: "Enter salary: ",
     },
-    // {
-    //   name: "department",
-    //   type: "list",
-    //   message: "Select a department",
-    //   choices: department
-    // }
-  ]);
-  // .then(function (answer){
-  //   connection.query("SELECT id FROM department WHERE ?", {name:answer.department}, function(err, department){
-  //     if (err) throw err;
-  //     connection.query(`INSERT INTO role (title, salary, department_id) VALUES ("${answer.title}", "${answer.salary}", "${department[0].id}")`, function(err, result){
-  //       if (err) throw err;
-  //       console.log(result.affectedRows + " record(s) updated");
-  //       connection.end();
-  //     })
-  //   });
+    {
+      name: "department",
+      type: "list",
+      message: "Select a department",
+      // choices: await viewDepartment()
+    }
+  ])
+  .then(function (answer){
+    connection.query("SELECT id FROM department WHERE ?", {name:answer.department}, function(err, department){
+      if (err) throw err;
+      connection.query(`INSERT INTO role (title, salary, department_id) VALUES ("${answer.title}", "${answer.salary}", "${department[0].id}")`, function(err, result){
+        if (err) throw err;
+        console.log(result.affectedRows + " record(s) updated");
+        connection.end();
+      })
+    });
 
-  // });
+  });
 }
 
 // addNewRole()
-// addNewEmployee()
+addNewEmployee()
+
+async function addNewEmployee(){
+  let emplRoles = await employeeByRole();
+  let viewManagers = await viewManager();
+  
+  // end select
+  inquirer
+      .prompt([{
+          name: "firstName",
+          type: "input",
+          message: "Enter employee's first name: "
+      },
+      {
+          name: "lastName",
+          type: "input",
+          message: "Enter employees last name: "
+      },
+      {
+          name: "title",
+          type: "list",
+          message: "Select Employee Role:",
+          choices: emplRoles
+      },
+      {
+          name: "manager",
+          type: "list",
+          message: "Select Employee's Manager: ",
+          choices: viewManagers
+      }
+  ])
+}
+
+
+
+
