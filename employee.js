@@ -13,7 +13,7 @@ const util = require("util");
 //   addDepartment,
 //   addNewRole,
 //   addNewEmployee} = require("./asset/app")
-  // addNewEmployee
+// addNewEmployee
 // // var exphbs = require("express-handlebars");
 const mysql = require("mysql");
 const inquirer = require("inquirer");
@@ -49,14 +49,14 @@ connection.connect(function (err) {
   console.log("DB connection established id: " + connection.threadId);
   // get employee's data after connection is made
 
-//   // start server
+  //   // start server
   app.listen(PORT, () => {
     console.log("Server listening on: http://localhost:" + PORT);
     // addDepartment()
     // addNewRole()
   });
 
-//   // getData();
+  //   // getData();
 });
 connection.query = util.promisify(connection.query);
 
@@ -96,18 +96,20 @@ function viewEmployees() {
 // viewEmployees()
 
 // get Employees using promisified function
-function getEmployees(){
+function getEmployees() {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT first_name, last_name FROM employees", function(err, results) {
-      if (err) return reject(err);        
+    connection.query("SELECT first_name, last_name FROM employees", function (
+      err,
+      results
+    ) {
+      if (err) return reject(err);
       let employeeNames = [];
-      for (var i = 0; i < results.length; i++){
-          employeeNames.push(results[i].first_name + " " + results[i].last_name);
-          console.log("All Employees:", employeeNames)
+      for (var i = 0; i < results.length; i++) {
+        employeeNames.push(results[i].first_name + " " + results[i].last_name);
+        console.log("All Employees:", employeeNames);
       }
       return resolve(employeeNames);
-      
-    })
+    });
   });
 }
 // getEmployees()
@@ -121,20 +123,19 @@ function viewDepartment() {
   });
 }
 
-
 // get departments with Promisified function
 async function getDepartment() {
   return new Promise((resolve, reject) => {
-  connection.query("SELECT name FROM department", function (err, results) {
-    if (err) return reject(err);
-    let allDepartments = [];
-    for (var i = 0; i < results.length; i++) {
-      allDepartments.push(results[i].name);
-      console.log("All Departments:", allDepartments);
-    }
-    return resolve(allDepartments);
+    connection.query("SELECT name FROM department", function (err, results) {
+      if (err) return reject(err);
+      let allDepartments = [];
+      for (var i = 0; i < results.length; i++) {
+        allDepartments.push(results[i].name);
+        console.log("All Departments:", allDepartments);
+      }
+      return resolve(allDepartments);
+    });
   });
-});
 }
 // getDepartment()
 
@@ -179,7 +180,8 @@ function viewManager() {
       console.table(results);
       connection.end();
       return results;
-    });
+    }
+  );
 }
 
 async function getManager() {
@@ -295,7 +297,13 @@ function addDepartment() {
         function (err, result) {
           if (err) throw err;
           // use 'affectRows' default is the number of rows actually changed
-          console.log(result.affectedRows + " record(s) updated" + answer.name + " " + "Department!");
+          console.log(
+            result.affectedRows +
+              " record(s) updated" +
+              answer.name +
+              " " +
+              "Department!"
+          );
         }
       );
       connection.end();
@@ -306,7 +314,7 @@ function addDepartment() {
 // add new role
 async function addNewRole() {
   let departmentID = await getDepartment();
-  console.log("Departments Available:", departmentID)
+  console.log("Departments Available:", departmentID);
   inquirer
     .prompt([
       {
@@ -323,7 +331,7 @@ async function addNewRole() {
         name: "department",
         type: "list",
         message: "Select a department",
-        choices: await viewDepartment()
+        choices: await viewDepartment(),
       },
     ])
     .then(function (answer) {
@@ -339,7 +347,9 @@ async function addNewRole() {
               console.log(
                 result.affectedRows +
                   " record(s) updated for " +
-                  answer.department + " " + "Role!"
+                  answer.department +
+                  " " +
+                  "Role!"
               );
               connection.end();
             }
@@ -431,37 +441,76 @@ async function addNewEmployee() {
 // addNewEmployee();
 
 // update employees roles
-async function updateEmployeeRole(){
+async function updateEmployeeRole() {
   let empNames = await getEmployees();
   let empRoles = await getAllRole();
-  
+
   inquirer
-      .prompt([{
-          name: "name",
-          type: "list",
-          message: "Select Employee: ",
-          choices: empNames
+    .prompt([
+      {
+        name: "name",
+        type: "list",
+        message: "Select Employee: ",
+        choices: empNames,
       },
       {
-          name: "title",
-          type: "list",
-          message: "Add Employee's New Role: ",
-          choices: empRoles
-      }
-  ])
-  .then(function (answer){
-   let firstName = answer.name.split(' ').slice(0, -1).join(' ');
-    let lastName = answer.name.split(' ').slice(-1).join(' ');
-    connection.query("SELECT id FROM role WHERE ?", {title:answer.title}, function(err, result){ 
-      if (err) throw err;
-      connection.query("UPDATE employees SET ? WHERE ? AND ?", [{role_id: result[0].id}, {first_name:firstName}, {last_name:lastName}], function(err, result){
-        if (err) throw err;
-        console.log(result.affectedRows + " record(s) updated");
-        connection.end();
-      })
+        name: "title",
+        type: "list",
+        message: "Add Employee's New Role: ",
+        choices: empRoles,
+      },
+    ])
+    .then(function (answer) {
+      let firstName = answer.name.split(" ").slice(0, -1).join(" ");
+      let lastName = answer.name.split(" ").slice(-1).join(" ");
+      connection.query(
+        "SELECT id FROM role WHERE ?",
+        { title: answer.title },
+        function (err, result) {
+          if (err) throw err;
+          connection.query(
+            "UPDATE employees SET ? WHERE ? AND ?",
+            [
+              { role_id: result[0].id },
+              { first_name: firstName },
+              { last_name: lastName },
+            ],
+            function (err, result) {
+              if (err) throw err;
+              console.log(result.affectedRows + " record(s) updated");
+              connection.end();
+            }
+          );
+        }
+      );
     });
-  
-  });
 }
 
-updateEmployeeRole()
+
+// create function to delete employee from database
+async function deleteEmployee() {
+  let emplNames = await getEmployees();
+  inquirer
+    .prompt({
+      name: "employee",
+      type: "list",
+      message: "Please Employee to be deleted?",
+      choices: emplNames,
+    })
+    .then(function (answer) {
+      let emplFirstName = answer.employee.split(" ").slice(0, -1).join(" ");
+      let emplLastName = answer.employee.split(" ").slice(-1).join(" ");
+
+      connection.query(
+        "DELETE FROM employees WHERE ? AND ?",
+        [{ first_name: emplFirstName }, { last_name: emplLastName }],
+        function (err, result) {
+          if (err) throw err;
+          console.log(result.affectedRows + " record(s) deleted");
+          connection.end();
+        }
+      );
+    });
+}
+
+deleteEmployee();
