@@ -85,6 +85,7 @@ function getData() {
 }
 
 // ------------- functions viewDepartment, viewEmployees viewManager and viewAllRole --
+// view all employees
 function viewEmployees() {
   connection.query("SELECT * FROM employees", function (err, results) {
     if (err) throw err;
@@ -95,7 +96,7 @@ function viewEmployees() {
 }
 // viewEmployees()
 
-// get Employees using romisified function
+// get Employees using promisified function
 function getEmployees(){
   return new Promise((resolve, reject) => {
     connection.query("SELECT first_name, last_name FROM employees", function(err, results) {
@@ -111,9 +112,19 @@ function getEmployees(){
   });
 }
 // getEmployees()
+// view Employees using promisified function
+function viewDepartment() {
+  connection.query("SELECT * FROM department", function (err, results) {
+    if (err) throw err;
+    console.table(results);
+    connection.end();
+    return results;
+  });
+}
 
-// view all departments with Promisified function
-async function viewDepartment() {
+
+// get departments with Promisified function
+async function getDepartment() {
   return new Promise((resolve, reject) => {
   connection.query("SELECT name FROM department", function (err, results) {
     if (err) return reject(err);
