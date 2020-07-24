@@ -76,8 +76,7 @@ function getData() {
       // "Add New Employee",
       // "Add New Department",
       // "Add New Role",
-      "Update/Edit Employee Manager",
-      "Update/Edit Employee Role",
+      // "Update/Edit Employee Role",
       "Delete/Remove Employee",
       "View the total utilized Budget of a Department",
     ],
@@ -94,7 +93,7 @@ function viewEmployees() {
     return results;
   });
 }
-viewEmployees()
+// viewEmployees()
 
 // get Employees using promisified function
 function getEmployees(){
@@ -137,7 +136,9 @@ async function getDepartment() {
   });
 });
 }
-viewDepartment()
+// getDepartment()
+
+// viewDepartment()
 
 // view Employees using
 function viewAllRole() {
@@ -198,7 +199,7 @@ async function getManager() {
     );
   });
 }
-viewManager();
+// viewManager();
 
 //---------- functions to select employee based on department role or manager---------
 // view all employees by department
@@ -304,7 +305,7 @@ function addDepartment() {
 // addDepartment()
 // add new role
 async function addNewRole() {
-  let departmentID = await viewDepartment();
+  let departmentID = await getDepartment();
   console.log("Departments Available:", departmentID)
   inquirer
     .prompt([
@@ -353,8 +354,8 @@ async function addNewRole() {
 // add new employee by role
 async function addNewEmployee() {
   //array for the choices
-  let emplRoles = await viewAllRole();
-  let viewManagers = await viewManager();
+  let emplRoles = await getAllRole();
+  let viewManagers = await getManager();
 
   let answer = await inquirer
     .prompt([
@@ -430,10 +431,9 @@ async function addNewEmployee() {
 // addNewEmployee();
 
 // update employees roles
-
 async function updateEmployeeRole(){
   let empNames = await getEmployees();
-  let empRoles = await viewAllRole();
+  let empRoles = await getAllRole();
   
   inquirer
       .prompt([{
@@ -450,11 +450,11 @@ async function updateEmployeeRole(){
       }
   ])
   .then(function (answer){
-    var firstName = answer.name.split(' ').slice(0, -1).join(' ');
-    var lastName = answer.name.split(' ').slice(-1).join(' ');
+   let firstName = answer.name.split(' ').slice(0, -1).join(' ');
+    let lastName = answer.name.split(' ').slice(-1).join(' ');
     connection.query("SELECT id FROM role WHERE ?", {title:answer.title}, function(err, result){ 
       if (err) throw err;
-      connection.query("UPDATE employee SET ? WHERE ? AND ?", [{role_id: result[0].id}, {first_name:firstName}, {last_name:lastName}], function(err, result){
+      connection.query("UPDATE employees SET ? WHERE ? AND ?", [{role_id: result[0].id}, {first_name:firstName}, {last_name:lastName}], function(err, result){
         if (err) throw err;
         console.log(result.affectedRows + " record(s) updated");
         connection.end();
@@ -464,4 +464,4 @@ async function updateEmployeeRole(){
   });
 }
 
-// updateEmployeeRole()
+updateEmployeeRole()
