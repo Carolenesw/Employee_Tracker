@@ -75,7 +75,7 @@ function getData() {
       // "View Employees By Role",
       // "Add New Employee",
       // "Add New Department",
-      "Add New Role",
+      // "Add New Role",
       "Update/Edit Employee Manager",
       "Update/Edit Employee Role",
       "Delete/Remove Employee",
@@ -94,6 +94,23 @@ function viewEmployees() {
   });
 }
 // viewEmployees()
+
+// get Employees using romisified function
+function getEmployees(){
+  return new Promise((resolve, reject) => {
+    connection.query("SELECT first_name, last_name FROM employees", function(err, results) {
+      if (err) return reject(err);        
+      let employeeNames = [];
+      for (var i = 0; i < results.length; i++){
+          employeeNames.push(results[i].first_name + " " + results[i].last_name);
+          console.log("All Employees:", employeeNames)
+      }
+      return resolve(employeeNames);
+      
+    })
+  });
+}
+// getEmployees()
 
 // view all departments with Promisified function
 async function viewDepartment() {
@@ -378,3 +395,40 @@ async function addNewEmployee() {
 }
 
 // addNewEmployee();
+
+// update employees roles
+
+async function updateEmployeeRole(){
+  let empNames = await getEmployees();
+  let empRoles = await viewAllRole();
+  
+  inquirer
+      .prompt([{
+          name: "name",
+          type: "list",
+          message: "Select Employee: ",
+          choices: empNames
+      },
+      {
+          name: "title",
+          type: "list",
+          message: "Add Employee's New Role: ",
+          choices: empRoles
+      }
+  ])
+  .then(function (answer){
+    var firstName = answer.name.split(' ').slice(0, -1).join(' ');
+    var lastName = answer.name.split(' ').slice(-1).join(' ');
+    connection.query("SELECT id FROM role WHERE ?", {title:answer.title}, function(err, result){ 
+      if (err) throw err;
+      connection.query("UPDATE employee SET ? WHERE ? AND ?", [{role_id: result[0].id}, {first_name:firstName}, {last_name:lastName}], function(err, result){
+        if (err) throw err;
+        console.log(result.affectedRows + " record(s) updated");
+        connection.end();
+      })
+    });
+  
+  });
+}
+
+// updateEmployeeRole()
