@@ -94,7 +94,7 @@ function viewEmployees() {
     return results;
   });
 }
-// viewEmployees()
+viewEmployees()
 
 // get Employees using promisified function
 function getEmployees(){
@@ -137,10 +137,21 @@ async function getDepartment() {
   });
 });
 }
-// viewDepartment()
+viewDepartment()
 
-// view all roles Promisified function
-async function viewAllRole() {
+// view Employees using
+function viewAllRole() {
+  connection.query("SELECT * FROM role", function (err, results) {
+    if (err) throw err;
+    console.table(results);
+    connection.end();
+    return results;
+  });
+}
+// viewAllRole()
+
+// get all roles Promisified function
+async function getAllRole() {
   return new Promise((resolve, reject) => {
     connection.query("SELECT title FROM role", function (err, results) {
       if (err) return reject(err);
@@ -159,7 +170,18 @@ async function viewAllRole() {
 // viewAllRole()
 
 // view employees by manager managers with Promisified function
-async function viewManager() {
+function viewManager() {
+  connection.query(
+    "SELECT first_name, last_name, role_id, manager_id FROM employees INNER JOIN role ON employees.role_id = role.id WHERE role.title = 'Manager'",
+    function (err, results) {
+      if (err) throw err;
+      console.table(results);
+      connection.end();
+      return results;
+    });
+}
+
+async function getManager() {
   return new Promise((resolve, reject) => {
     // use inner join to link tables for selection
     connection.query(
@@ -176,7 +198,7 @@ async function viewManager() {
     );
   });
 }
-// viewManager();
+viewManager();
 
 //---------- functions to select employee based on department role or manager---------
 // view all employees by department
