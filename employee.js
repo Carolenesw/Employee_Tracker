@@ -1,4 +1,6 @@
 const express = require("express");
+// const application = require("./asset/app")
+// const connection = require("./asset/server")
 const util = require("util");
 
 // require app.js employee functions
@@ -11,24 +13,25 @@ const util = require("util");
 //   addDepartment,
 //   addNewRole,
 //   addNewEmployee} = require("./asset/app")
-
-// var exphbs = require("express-handlebars");
+  // addNewEmployee
+// // var exphbs = require("express-handlebars");
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 
-// require consoleTable to print MYSQL rows to the console
+// // require consoleTable to print MYSQL rows to the console
 const consoleTable = require("console.table");
 const { query } = require("express");
+const { async } = require("rxjs/internal/scheduler/async");
 const app = express();
 
-// Set the port of our application
+// // Set the port of our application
 const PORT = process.env.PORT || 8080;
 
-// Parse request body as JSON
+// // Parse request body as JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// set up connection to sql server and database
+// // set up connection to sql server and database
 const connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -37,7 +40,7 @@ const connection = mysql.createConnection({
   database: "employee_db",
 });
 
-// create function to handle connection
+// // create function to handle connection
 connection.connect(function (err) {
   if (err) {
     console.error("error connecting: " + err.stack);
@@ -46,14 +49,14 @@ connection.connect(function (err) {
   console.log("DB connection established id: " + connection.threadId);
   // get employee's data after connection is made
 
-  // start server
+//   // start server
   app.listen(PORT, () => {
     console.log("Server listening on: http://localhost:" + PORT);
     // addDepartment()
     // addNewRole()
   });
 
-  // getData();
+//   // getData();
 });
 connection.query = util.promisify(connection.query);
 
@@ -70,7 +73,7 @@ function getData() {
       // "View Employees By Department",
       // "View Employees By Manager",
       // "View Employees By Role",
-      "Add New Employee",
+      // "Add New Employee",
       // "Add New Department",
       "Add New Role",
       "Update/Edit Employee Manager",
@@ -92,16 +95,21 @@ function viewEmployees() {
 }
 // viewEmployees()
 
-// view all departments
-function viewDepartment() {
-  connection.query("SELECT * FROM department", function (err, results) {
-    if (err) throw err;
-    console.table(results);
-    connection.end();
-    return results;
+// view all departments with Promisified function
+async function viewDepartment() {
+  return new Promise((resolve, reject) => {
+  connection.query("SELECT name FROM department", function (err, results) {
+    if (err) return reject(err);
+    let allDepartments = [];
+    for (var i = 0; i < results.length; i++) {
+      allDepartments.push(results[i].name);
+      console.log("All Departments:", allDepartments);
+    }
+    return resolve(allDepartments);
   });
+});
 }
-// viewDepartment()
+viewDepartment()
 
 // view all roles Promisified function
 async function viewAllRole() {
@@ -261,7 +269,7 @@ async function addNewRole() {
         name: "department",
         type: "list",
         message: "Select a department",
-        // choices: await viewDepartment()
+        choices: await viewDepartment()
       },
     ])
     .then(function (answer) {
@@ -362,4 +370,4 @@ async function addNewEmployee() {
     });
 }
 
-addNewEmployee();
+// addNewEmployee();
