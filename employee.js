@@ -109,7 +109,7 @@ async function viewDepartment() {
   });
 });
 }
-viewDepartment()
+// viewDepartment()
 
 // view all roles Promisified function
 async function viewAllRole() {
@@ -118,6 +118,7 @@ async function viewAllRole() {
       if (err) return reject(err);
       let employeeRoles = [];
       for (var i = 0; i < results.length; i++) {
+        // push results in an array
         employeeRoles.push(results[i].title);
         console.log("employee Roles:", employeeRoles);
         // return resolve(employeeRoles);
@@ -243,7 +244,7 @@ function addDepartment() {
         function (err, result) {
           if (err) throw err;
           // use 'affectRows' default is the number of rows actually changed
-          console.log(result.affectedRows + " record(s) updated");
+          console.log(result.affectedRows + " record(s) updated" + answer.name + " " + "Department!");
         }
       );
       connection.end();
@@ -251,8 +252,10 @@ function addDepartment() {
 }
 
 // addDepartment()
+// add new role
 async function addNewRole() {
   let departmentID = await viewDepartment();
+  console.log("Departments Available:", departmentID)
   inquirer
     .prompt([
       {
@@ -282,7 +285,11 @@ async function addNewRole() {
             `INSERT INTO role (title, salary, department_id) VALUES ("${answer.title}", "${answer.salary}", "${department[0].id}")`,
             function (err, result) {
               if (err) throw err;
-              console.log(result.affectedRows + " record(s) updated");
+              console.log(
+                result.affectedRows +
+                  " record(s) updated for " +
+                  answer.department + " " + "Role!"
+              );
               connection.end();
             }
           );
