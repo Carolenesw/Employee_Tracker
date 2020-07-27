@@ -1,6 +1,7 @@
 
 const inquirer = require("inquirer");
 
+
 // require app.js employee functions
 const {viewEmployees,
   getEmployees,
@@ -16,10 +17,10 @@ const {viewEmployees,
   employeeByRole,
   addNewEmployee,
   updateEmployeeRole,
-  deleteEmployee} = require("./asset/app")
+  deleteEmployee} = require("../employee")
 
 // create function to prompt employee for query/selection
-function getData() {
+const getData = function() {
   inquirer.prompt({
     name: "query",
     type: "list",

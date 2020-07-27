@@ -1,87 +1,14 @@
-const express = require("express");
-// const application = require("./asset/app")
-// const connection = require("./asset/server")
+
+const getData = require("./asset/employee_prompt")
+const connection = require("./asset/connection")
 const util = require("util");
 
-// require app.js employee functions
-// const {viewEmployees,
-//   viewDepartment,
-//   viewAllRole,
-//   viewManager,
-//   viewEmployeesByDep,
-//   employeeByRole,
-//   addDepartment,
-//   addNewRole,
-//   addNewEmployee} = require("./asset/app")
-// addNewEmployee
-// // var exphbs = require("express-handlebars");
-const mysql = require("mysql");
 const inquirer = require("inquirer");
 
 // // require consoleTable to print MYSQL rows to the console
 const consoleTable = require("console.table");
-const { query } = require("express");
-const { async } = require("rxjs/internal/scheduler/async");
-const app = express();
 
-// // Set the port of our application
-const PORT = process.env.PORT || 8080;
-
-// // Parse request body as JSON
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-// // set up connection to sql server and database
-const connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "mysql",
-  database: "employee_db",
-});
-
-// // create function to handle connection
-connection.connect(function (err) {
-  if (err) {
-    console.error("error connecting: " + err.stack);
-  }
-
-  console.log("DB connection established id: " + connection.threadId);
-  // get employee's data after connection is made
-
-  //   // start server
-  app.listen(PORT, () => {
-    console.log("Server listening on: http://localhost:" + PORT);
-    // addDepartment()
-    // addNewRole()
-  });
-
-  //   // getData();
-});
 connection.query = util.promisify(connection.query);
-
-// create function to prompt for employee query/selection
-function getData() {
-  inquirer.prompt({
-    name: "query",
-    type: "list",
-    message: "Please select action to be taken?",
-    choices: [
-      // "View All Employees",
-      // "View All Departments",
-      // "View Employee Roles",
-      // "View Employees By Department",
-      // "View Employees By Manager",
-      // "View Employees By Role",
-      // "Add New Employee",
-      // "Add New Department",
-      // "Add New Role",
-      // "Update/Edit Employee Role",
-      "Delete/Remove Employee",
-      "View the total utilized Budget of a Department",
-    ],
-  });
-}
 
 // ------------- functions viewDepartment, viewEmployees viewManager and viewAllRole --
 // view all employees
@@ -93,7 +20,6 @@ function viewEmployees() {
     return results;
   });
 }
-// viewEmployees()
 
 // get Employees using promisified function
 function getEmployees() {
@@ -112,7 +38,7 @@ function getEmployees() {
     });
   });
 }
-// getEmployees()
+
 // view Employees using promisified function
 function viewDepartment() {
   connection.query("SELECT * FROM department", function (err, results) {
@@ -137,9 +63,6 @@ async function getDepartment() {
     });
   });
 }
-// getDepartment()
-
-// viewDepartment()
 
 // view Employees using
 function viewAllRole() {
@@ -150,7 +73,6 @@ function viewAllRole() {
     return results;
   });
 }
-// viewAllRole()
 
 // get all roles Promisified function
 async function getAllRole() {
@@ -168,8 +90,6 @@ async function getAllRole() {
     });
   });
 }
-
-// viewAllRole()
 
 // view employees by manager managers with Promisified function
 function viewManager() {
@@ -201,9 +121,9 @@ async function getManager() {
     );
   });
 }
-// viewManager();
 
 //---------- functions to select employee based on department role or manager---------
+
 // view all employees by department
 function viewEmployeesByDep() {
   connection.query("SELECT * FROM department", function (err, results) {
@@ -240,7 +160,6 @@ function viewEmployeesByDep() {
       });
   });
 }
-// viewEmployeesByDep();
 
 // view all employees by Role
 function employeeByRole() {
@@ -277,7 +196,6 @@ function employeeByRole() {
       });
   });
 }
-// employeeByRole();
 
 //---------- functions to add department, employee and role -----------------------
 
@@ -310,7 +228,6 @@ function addDepartment() {
     });
 }
 
-// addDepartment()
 // add new role
 async function addNewRole() {
   let departmentID = await getDepartment();
@@ -358,8 +275,6 @@ async function addNewRole() {
       );
     });
 }
-
-// addNewRole()
 
 // add new employee by role
 async function addNewEmployee() {
@@ -438,8 +353,6 @@ async function addNewEmployee() {
     });
 }
 
-// addNewEmployee();
-
 // update employees roles
 async function updateEmployeeRole() {
   let empNames = await getEmployees();
@@ -477,7 +390,7 @@ async function updateEmployeeRole() {
             ],
             function (err, result) {
               if (err) throw err;
-              console.log(result.affectedRows + " record(s) updated");
+              console.log(result.affectedRows + " Employee's record(s) updated");
               connection.end();
             }
           );
@@ -486,7 +399,6 @@ async function updateEmployeeRole() {
     });
 }
 
-
 // create function to delete employee from database
 async function deleteEmployee() {
   let emplNames = await getEmployees();
@@ -494,7 +406,7 @@ async function deleteEmployee() {
     .prompt({
       name: "employee",
       type: "list",
-      message: "Please Employee to be deleted?",
+      message: "Please select Employee to be deleted?",
       choices: emplNames,
     })
     .then(function (answer) {
@@ -506,11 +418,25 @@ async function deleteEmployee() {
         [{ first_name: emplFirstName }, { last_name: emplLastName }],
         function (err, result) {
           if (err) throw err;
-          console.log(result.affectedRows + " record(s) deleted");
+          console.log(result.affectedRows + " Employee's record(s) deleted");
           connection.end();
         }
       );
     });
 }
 
-deleteEmployee();
+module.exports = {viewEmployees,
+  getEmployees,
+  viewDepartment,
+  getDepartment,
+  viewAllRole,
+  getAllRole,
+  viewManager,
+  getManager,
+  viewEmployeesByDep,
+  addDepartment,
+  addNewRole,
+  employeeByRole,
+  addNewEmployee,
+  updateEmployeeRole,
+  deleteEmployee}; 
