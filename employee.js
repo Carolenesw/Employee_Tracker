@@ -1,5 +1,3 @@
-const getData = require("./asset/employee_prompt");
-const connection = require("./asset/connection");
 const util = require("util");
 
 const inquirer = require("inquirer");
@@ -7,11 +5,9 @@ const inquirer = require("inquirer");
 // // require consoleTable to print MYSQL rows to the console
 const consoleTable = require("console.table");
 
-connection.query = util.promisify(connection.query);
-
 // ------------- functions viewDepartment, viewEmployees viewManager and viewAllRole --
 // view all employees
-const viewEmployees = function () {
+const viewEmployees = function (connection) {
   connection.query("SELECT * FROM employees", function (err, results) {
     if (err) throw err;
     console.table(results);
@@ -19,9 +15,9 @@ const viewEmployees = function () {
     return results;
   });
 };
-// viewEmployees()
+
 // get Employees using promisified function
-const getEmployees = function () {
+const getEmployees = function (connection) {
   return new Promise((resolve, reject) => {
     connection.query("SELECT first_name, last_name FROM employees", function (
       err,
@@ -39,7 +35,7 @@ const getEmployees = function () {
 };
 
 // view Employees using promisified function
-const viewDepartment = function () {
+const viewDepartment = function (connection) {
   connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
     console.table(results);
@@ -49,7 +45,7 @@ const viewDepartment = function () {
 };
 
 // get departments with Promisified function
-const getDepartment = async function () {
+const getDepartment = async function (connection) {
   return new Promise((resolve, reject) => {
     connection.query("SELECT name FROM department", function (err, results) {
       if (err) return reject(err);
@@ -64,7 +60,7 @@ const getDepartment = async function () {
 };
 
 // view Employees using
-const viewAllRole = function () {
+const viewAllRole = function (connection) {
   connection.query("SELECT * FROM role", function (err, results) {
     if (err) throw err;
     console.table(results);
@@ -74,7 +70,7 @@ const viewAllRole = function () {
 };
 
 // get all roles Promisified function
-const getAllRole = async function () {
+const getAllRole = async function (connection) {
   return new Promise((resolve, reject) => {
     connection.query("SELECT title FROM role", function (err, results) {
       if (err) return reject(err);
@@ -91,7 +87,7 @@ const getAllRole = async function () {
 };
 
 // view employees by manager managers with Promisified function
-const viewManager = function () {
+const viewManager = function (connection) {
   connection.query(
     "SELECT first_name, last_name, role_id, manager_id FROM employees INNER JOIN role ON employees.role_id = role.id WHERE role.title = 'Manager'",
     function (err, results) {
@@ -103,7 +99,7 @@ const viewManager = function () {
   );
 };
 
-const getManager = async function () {
+const getManager = async function (connection) {
   return new Promise((resolve, reject) => {
     // use inner join to link tables for selection
     connection.query(
@@ -124,7 +120,7 @@ const getManager = async function () {
 //---------- functions to select employee based on department role or manager---------
 
 // view all employees by department
-const viewEmployeesByDep = function () {
+const viewEmployeesByDep = function (connection) {
   connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
     inquirer
@@ -161,7 +157,7 @@ const viewEmployeesByDep = function () {
 };
 
 // view all employees by Role
-const employeeByRole = function () {
+const employeeByRole = function (connection) {
   connection.query("SELECT title FROM role", function (err, results) {
     if (err) throw err;
     inquirer
@@ -199,7 +195,7 @@ const employeeByRole = function () {
 //---------- functions to add department, employee and role -----------------------
 
 // add a new department
-const addDepartment = function () {
+const addDepartment = function (connection) {
   inquirer
     .prompt([
       {
@@ -228,8 +224,8 @@ const addDepartment = function () {
 };
 
 // add new role
-const addNewRole = async function () {
-  let departmentID = await getDepartment();
+const addNewRole = async function (connection) {
+  let departmentID = await getDepartment(connection);
   console.log("Departments Available:", departmentID);
   inquirer
     .prompt([
@@ -247,7 +243,7 @@ const addNewRole = async function () {
         name: "department",
         type: "list",
         message: "Select a department",
-        choices: await viewDepartment(),
+        choices: departmentID,
       },
     ])
     .then(function (answer) {
@@ -276,10 +272,10 @@ const addNewRole = async function () {
 };
 
 // add new employee by role
-const addNewEmployee = async function () {
+const addNewEmployee = async function (connection) {
   //array for the choices
-  let emplRoles = await getAllRole();
-  let viewManagers = await getManager();
+  let emplRoles = await getAllRole(connection);
+  let viewManagers = await getManager(connection);
 
   let answer = await inquirer
     .prompt([
@@ -353,9 +349,9 @@ const addNewEmployee = async function () {
 };
 
 // update employees roles
-const updateEmployeeRole = async function () {
-  let empNames = await getEmployees();
-  let empRoles = await getAllRole();
+const updateEmployeeRole = async function (connection) {
+  let empNames = await getEmployees(connection);
+  let empRoles = await getAllRole(connection);
 
   inquirer
     .prompt([
@@ -401,7 +397,7 @@ const updateEmployeeRole = async function () {
 };
 
 // create function to delete employee from database
-const deleteEmployee = async function () {
+const deleteEmployee = async function (connection) {
   let emplNames = await getEmployees();
   inquirer
     .prompt({
@@ -444,19 +440,3 @@ module.exports = {
   updateEmployeeRole,
   deleteEmployee,
 };
-
-// module.exports = viewEmployees;
-// module.exports = getEmployees;
-// module.exports = viewDepartment;
-// module.exports = getDepartment;
-// module.exports = viewAllRole;
-// module.exports = getAllRole;
-// module.exports = viewManager;
-// module.exports = getManager;
-// module.exports = viewEmployeesByDep;
-// module.exports = addDepartment;
-// module.exports = addNewRole;
-// module.exports = employeeByRole;
-// module.exports = addNewEmployee;
-// module.exports = updateEmployeeRole;
-// module.exports = deleteEmployee;
