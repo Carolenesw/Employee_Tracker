@@ -398,7 +398,7 @@ const updateEmployeeRole = async function (connection) {
 
 // create function to delete employee from database
 const deleteEmployee = async function (connection) {
-  let emplNames = await getEmployees();
+  let emplNames = await getEmployees(connection);
   inquirer
     .prompt({
       name: "employee",
