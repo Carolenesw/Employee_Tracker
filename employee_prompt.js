@@ -17,7 +17,7 @@ const {
   addNewEmployee,
   updateEmployeeRole,
   deleteEmployee}
- = require("../employee");
+ = require("./employee");
 
   console.log("View employees:", viewEmployees)
   console.log("View manager:", viewManager)

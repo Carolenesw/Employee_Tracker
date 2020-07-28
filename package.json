@@ -2,7 +2,7 @@
   "name": "employee_tracker",
   "version": "1.0.0",
   "description": "Create an employee tracker using sql and express",
-  "main": "employee.js",
+  "main": "connection.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

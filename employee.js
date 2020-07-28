@@ -5,7 +5,7 @@ const inquirer = require("inquirer");
 // // require consoleTable to print MYSQL rows to the console
 const consoleTable = require("console.table");
 
-// ------------- functions viewDepartment, viewEmployees viewManager and viewAllRole --
+// ------------- functions viewDepartment, viewEmployees viewManager and viewAllRole 
 // view all employees
 const viewEmployees = function (connection) {
   connection.query("SELECT * FROM employees", function (err, results) {
@@ -34,7 +34,7 @@ const getEmployees = function (connection) {
   });
 };
 
-// view Employees using promisified function
+// view Employees 
 const viewDepartment = function (connection) {
   connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
@@ -59,7 +59,7 @@ const getDepartment = async function (connection) {
   });
 };
 
-// view Employees using
+// view Employee roles
 const viewAllRole = function (connection) {
   connection.query("SELECT * FROM role", function (err, results) {
     if (err) throw err;
@@ -69,7 +69,7 @@ const viewAllRole = function (connection) {
   });
 };
 
-// get all roles Promisified function
+// get all roles using Promisified function
 const getAllRole = async function (connection) {
   return new Promise((resolve, reject) => {
     connection.query("SELECT title FROM role", function (err, results) {
@@ -86,7 +86,7 @@ const getAllRole = async function (connection) {
   });
 };
 
-// view employees by manager managers with Promisified function
+// view employees by manager
 const viewManager = function (connection) {
   connection.query(
     "SELECT first_name, last_name, role_id, manager_id FROM employees INNER JOIN role ON employees.role_id = role.id WHERE role.title = 'Manager'",
@@ -99,6 +99,7 @@ const viewManager = function (connection) {
   );
 };
 
+// view employees by manager with Promisified function
 const getManager = async function (connection) {
   return new Promise((resolve, reject) => {
     // use inner join to link tables for selection
@@ -117,7 +118,7 @@ const getManager = async function (connection) {
   });
 };
 
-//---------- functions to select employee based on department role or manager---------
+//-------- functions to select employee based on department role or manager---------
 
 // view all employees by department
 const viewEmployeesByDep = function (connection) {
@@ -271,7 +272,7 @@ const addNewRole = async function (connection) {
     });
 };
 
-// add new employee by role
+// add new employee by role with
 const addNewEmployee = async function (connection) {
   //array for the choices
   let emplRoles = await getAllRole(connection);
