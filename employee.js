@@ -1,6 +1,5 @@
-
-const getData = require("./asset/employee_prompt")
-const connection = require("./asset/connection")
+const getData = require("./asset/employee_prompt");
+const connection = require("./asset/connection");
 const util = require("util");
 
 const inquirer = require("inquirer");
@@ -12,17 +11,17 @@ connection.query = util.promisify(connection.query);
 
 // ------------- functions viewDepartment, viewEmployees viewManager and viewAllRole --
 // view all employees
-function viewEmployees() {
+const viewEmployees = function () {
   connection.query("SELECT * FROM employees", function (err, results) {
     if (err) throw err;
     console.table(results);
     connection.end();
     return results;
   });
-}
-
+};
+// viewEmployees()
 // get Employees using promisified function
-function getEmployees() {
+const getEmployees = function () {
   return new Promise((resolve, reject) => {
     connection.query("SELECT first_name, last_name FROM employees", function (
       err,
@@ -37,20 +36,20 @@ function getEmployees() {
       return resolve(employeeNames);
     });
   });
-}
+};
 
 // view Employees using promisified function
-function viewDepartment() {
+const viewDepartment = function () {
   connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
     console.table(results);
     connection.end();
     return results;
   });
-}
+};
 
 // get departments with Promisified function
-async function getDepartment() {
+const getDepartment = async function () {
   return new Promise((resolve, reject) => {
     connection.query("SELECT name FROM department", function (err, results) {
       if (err) return reject(err);
@@ -62,20 +61,20 @@ async function getDepartment() {
       return resolve(allDepartments);
     });
   });
-}
+};
 
 // view Employees using
-function viewAllRole() {
+const viewAllRole = function () {
   connection.query("SELECT * FROM role", function (err, results) {
     if (err) throw err;
     console.table(results);
     connection.end();
     return results;
   });
-}
+};
 
 // get all roles Promisified function
-async function getAllRole() {
+const getAllRole = async function () {
   return new Promise((resolve, reject) => {
     connection.query("SELECT title FROM role", function (err, results) {
       if (err) return reject(err);
@@ -89,10 +88,10 @@ async function getAllRole() {
       return resolve(employeeRoles);
     });
   });
-}
+};
 
 // view employees by manager managers with Promisified function
-function viewManager() {
+const viewManager = function () {
   connection.query(
     "SELECT first_name, last_name, role_id, manager_id FROM employees INNER JOIN role ON employees.role_id = role.id WHERE role.title = 'Manager'",
     function (err, results) {
@@ -102,9 +101,9 @@ function viewManager() {
       return results;
     }
   );
-}
+};
 
-async function getManager() {
+const getManager = async function () {
   return new Promise((resolve, reject) => {
     // use inner join to link tables for selection
     connection.query(
@@ -120,12 +119,12 @@ async function getManager() {
       }
     );
   });
-}
+};
 
 //---------- functions to select employee based on department role or manager---------
 
 // view all employees by department
-function viewEmployeesByDep() {
+const viewEmployeesByDep = function () {
   connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
     inquirer
@@ -159,10 +158,10 @@ function viewEmployeesByDep() {
         });
       });
   });
-}
+};
 
 // view all employees by Role
-function employeeByRole() {
+const employeeByRole = function () {
   connection.query("SELECT title FROM role", function (err, results) {
     if (err) throw err;
     inquirer
@@ -195,12 +194,12 @@ function employeeByRole() {
         });
       });
   });
-}
+};
 
 //---------- functions to add department, employee and role -----------------------
 
 // add a new department
-function addDepartment() {
+const addDepartment = function () {
   inquirer
     .prompt([
       {
@@ -226,10 +225,10 @@ function addDepartment() {
       );
       connection.end();
     });
-}
+};
 
 // add new role
-async function addNewRole() {
+const addNewRole = async function () {
   let departmentID = await getDepartment();
   console.log("Departments Available:", departmentID);
   inquirer
@@ -274,10 +273,10 @@ async function addNewRole() {
         }
       );
     });
-}
+};
 
 // add new employee by role
-async function addNewEmployee() {
+const addNewEmployee = async function () {
   //array for the choices
   let emplRoles = await getAllRole();
   let viewManagers = await getManager();
@@ -351,10 +350,10 @@ async function addNewEmployee() {
         }
       );
     });
-}
+};
 
 // update employees roles
-async function updateEmployeeRole() {
+const updateEmployeeRole = async function () {
   let empNames = await getEmployees();
   let empRoles = await getAllRole();
 
@@ -390,17 +389,19 @@ async function updateEmployeeRole() {
             ],
             function (err, result) {
               if (err) throw err;
-              console.log(result.affectedRows + " Employee's record(s) updated");
+              console.log(
+                result.affectedRows + " Employee's record(s) updated"
+              );
               connection.end();
             }
           );
         }
       );
     });
-}
+};
 
 // create function to delete employee from database
-async function deleteEmployee() {
+const deleteEmployee = async function () {
   let emplNames = await getEmployees();
   inquirer
     .prompt({
@@ -423,9 +424,11 @@ async function deleteEmployee() {
         }
       );
     });
-}
+};
 
-module.exports = {viewEmployees,
+// export functions to employee_prompts file
+module.exports = {
+  viewEmployees,
   getEmployees,
   viewDepartment,
   getDepartment,
@@ -439,4 +442,21 @@ module.exports = {viewEmployees,
   employeeByRole,
   addNewEmployee,
   updateEmployeeRole,
-  deleteEmployee}; 
+  deleteEmployee,
+};
+
+// module.exports = viewEmployees;
+// module.exports = getEmployees;
+// module.exports = viewDepartment;
+// module.exports = getDepartment;
+// module.exports = viewAllRole;
+// module.exports = getAllRole;
+// module.exports = viewManager;
+// module.exports = getManager;
+// module.exports = viewEmployeesByDep;
+// module.exports = addDepartment;
+// module.exports = addNewRole;
+// module.exports = employeeByRole;
+// module.exports = addNewEmployee;
+// module.exports = updateEmployeeRole;
+// module.exports = deleteEmployee;

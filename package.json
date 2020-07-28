@@ -1,0 +1,25 @@
+{
+  "name": "employee_tracker",
+  "version": "1.0.0",
+  "description": "Create an employee tracker using sql and express",
+  "main": "employee.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Carolenesw/Employee_Tracker.git"
+  },
+  "author": "Carolene Wilson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Carolenesw/Employee_Tracker/issues"
+  },
+  "homepage": "https://github.com/Carolenesw/Employee_Tracker#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "express": "^4.17.1",
+    "inquirer": "^7.3.2",
+    "mysql": "^2.18.1"
+  }
+}

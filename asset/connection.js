@@ -22,7 +22,8 @@ const connection = mysql.createConnection({
     console.log("DB connection established id: " + connection.threadId);
     
     // get employee's prompt after connection is made
-      getData()
+      // getData()
+      // console.log("View employees:", viewEmployees)
     });
-  
+   
  module.exports = connection;

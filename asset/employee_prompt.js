@@ -3,7 +3,8 @@ const inquirer = require("inquirer");
 
 
 // require app.js employee functions
-const {viewEmployees,
+const {
+  viewEmployees,
   getEmployees,
   viewDepartment,
   getDepartment,
@@ -17,8 +18,27 @@ const {viewEmployees,
   employeeByRole,
   addNewEmployee,
   updateEmployeeRole,
-  deleteEmployee} = require("../employee")
+  deleteEmployee}
+ = require("../employee");
 
+// const viewEmployees = require("../employee");
+//   const getEmployees = require("../employee");
+//   const viewDepartment = require("../employee");
+//   const getDepartment = require("../employee");
+//   const viewAllRole = require("../employee");
+//   const getAllRole = require("../employee");
+//   const viewManager = require("../employee");
+//   const getManager = require("../employee");
+//   const viewEmployeesByDep = require("../employee");
+//   const addDepartment = require("../employee");
+//   const addNewRole = require("../employee");
+//   const employeeByRole = require("../employee");
+//   const addNewEmployee = require("../employee");
+//   const updateEmployeeRole = require("../employee");
+//   const deleteEmployee = require("../employee");
+
+  console.log("View employees:", viewEmployees)
+  console.log("View manager:", viewManager)
 // create function to prompt employee for query/selection
 const getData = function() {
   inquirer.prompt({
