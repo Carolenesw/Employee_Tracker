@@ -54,7 +54,7 @@ Email: carolenesw@gmail.com
 * Repo link:
 https://github.com/Carolenesw/Employee_Tracker
 
-<!-- * Deployed URL: https://notestake.herokuapp.com/ -->
+* Deployed URL: https://drive.google.com/file/d/1YIUse-oIgAghkCaU1U_jJAnl4RZsAZnW/view?usp=sharing
 
 ## Images
 
